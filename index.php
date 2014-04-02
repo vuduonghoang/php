@@ -194,8 +194,19 @@ echo "-----------------------------------------------";
 echo "<br>";
 echo "PHP logical operators";
 echo "<br>";
-
-
+var_dump($d && $e);
+echo "<br>";
+var_dump($d || $e);
+echo "<br>";
+var_dump($d xor $e);// True khi d dung hoac la e dung va false khi ca d va e deu dung. 
+echo "<br>";
+echo "-----------------------------------------------";
+echo "<br>";
+echo "Array Operator" . "<br>";
+$x = array("a" => "red", "b" => "green");
+$y = array("c" => "d","4" => "yellow");
+$z = $x + $y; // union of $x and $y
+var_dump($z);
 
 
 
