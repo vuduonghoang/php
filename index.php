@@ -103,6 +103,104 @@ echo strlen($string);echo "<br>";
 // Ham strpos() se tra ve vi tri cua character ma ban can tim trong chuoi va co phan biet chu hoa va chu thuong
 echo strpos("$string","Vu");
 // Back to the real programer :D :D :D
+// php constant 
+define(Greeting, "Welcome to PHP world");
+echo "<br>";
+echo Greeting;
+define(pi,"3.14");
+echo "<br>";
+echo pi;
+echo "<br>";
+var_dump(pi);
+define("greeting1", "Welcome to PHP 1", true);
+echo "<br>";
+echo greeting1;
+echo "<br>";
+echo "-----------------------------------------------";
+echo "<br>";
+echo "PHP Operation"; // addition,subtraction,multiplication,division,modulus. +,-,*,/,%
+echo "<br>";
+$m = 10;
+$n = 6;
+echo $m + $n;
+echo "<br>";
+echo $m - $n;
+echo "<br>";
+echo $m * $n;
+echo "<br>";
+echo $m/$n;
+echo "<br>";
+echo $m%$n;
+echo "<br>";
+
+echo "-----------------------------------------------";
+echo "<br>";
+echo "Assignment Operator";
+echo "<br>";
+//echo $m +=100;
+$m += 11;
+echo $m;
+echo "<br>";
+
+echo "-----------------------------------------------";
+echo "<br>";
+echo "String operator";
+echo "<br>";
+$string1 = "Hello";
+$string2 = $string1 . " Vu Hoang ";
+echo $string2;
+echo "<br>";
+$string3 = "kakaka";
+echo $string3 .= "hehe";
+echo "<br>";
+echo "-----------------------------------------------"; 
+echo "<br>";
+echo "Increment Value and Decrement Operator";
+echo "<br>";
+$h = 1;
+$k = 2;
+//echo ++$h;
+echo "<br>";
+echo $h++;
+// sau buoc nay qua cai buoc tiep theo thi $h da dc +1
+echo "<br>";
+echo ++$h;
+echo "<br>";
+echo --$k;
+echo "<br>";
+echo $k--;
+echo "-----------------------------------------------"; 
+echo "<br>";
+echo "PHP comparision Operator";
+echo "<br>";
+// $x == $y; $x === $y; $x != $y; $x <> $y; $x < $y; $x > $y; $x >= $y; $x <= $y;$x !== $y;
+$d = 100;
+$e = "100";
+var_dump($d == $e);
+echo "<br>";
+var_dump($d);
+echo "<br>";
+var_dump($e);
+echo "<br>";
+var_dump($d === $e);
+echo "<br>";
+var_dump($d != $e);
+echo "<br>";
+var_dump($d !== $e);
+echo "<br>";
+var_dump($d <> $e);
+echo "<br>";
+echo "-----------------------------------------------";
+echo "<br>";
+echo "PHP logical operators";
+echo "<br>";
+
+
+
+
+
+
+
 
 
 
