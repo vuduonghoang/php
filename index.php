@@ -203,12 +203,12 @@ echo "<br>";
 echo "-----------------------------------------------";
 echo "<br>";
 echo "Array Operator" . "<br>";
-$x = array("a" => "red", "b" => "green");
-$y = array("c" => "d","4" => "yellow");
+$x = array("1" => "red", "2" => "green");
+$y = array("1" => "red","2" => "green");
 $z = $x + $y; // union of $x and $y
 var_dump($z);
-
-
+echo "<br>";
+var_dump($x == $y);
 
 
 
