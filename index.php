@@ -204,33 +204,30 @@ echo "-----------------------------------------------";
 echo "<br>";
 echo "Array Operator" . "<br>";
 $x = array("1" => "red", "2" => "green");
-$y = array("1" => "red","2" => "green");
+$y = array("3" => "red","4" => "green");
 $z = $x + $y; // union of $x and $y
 var_dump($z);
 echo "<br>";
 var_dump($x == $y);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+echo "<br>";
+var_dump($x === $y);
+echo "<br>";
+var_dump($x != $y);
+echo "<br>";
+var_dump($x <> $y);
+echo "<br>";
+var_dump($x !== $y);
+echo "<br>";
+echo "-----------------------------------------------";
+echo "<br>";
+echo "PHP conditional statements";
+echo "<br>";
+// if statement: executes some code only if a specified condition is true;
+$t = date("H");
+if($t < 20)
+{
+      echo $t. "<br>" . "Have a good day!";
+}
 
 
 
