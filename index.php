@@ -223,11 +223,68 @@ echo "<br>";
 echo "PHP conditional statements";
 echo "<br>";
 // if statement: executes some code only if a specified condition is true;
-$t = date("H");
-if($t < 20)
+$d = date("D");
+if($d == "Sat" or $d =="Sun")
 {
-      echo $t. "<br>" . "Have a good day!";
+      echo $d. "<br>" . "Have nice weekend!";
 }
+else
+{
+      echo $d . "<br>" . "Have a good day!";
+}
+$t = date("H");
+if($t <= 11)
+{
+      var_dump($t);
+      echo "<br>";
+      echo "Good morning";
+}
+elseif( $t > 11 and $t <= 12 )
+{
+      echo "Good lunch";
+}
+else
+{
+      echo "Good afternoon";
+}
+echo "-----------------------------------------------";
+echo "<br>";
+echo "Switch PHP";
+echo "<br>";
+$color = "red";
+switch ($color) {
+      case 'green':
+            {
+                  echo "red";
+                  break;      
+            }
+      case 'yellow':
+                  echo "yellow";
+                  break;      
+      
+      default:
+            echo "no color";
+            break;
+}
+echo "<br>";
+echo "-----------------------------------------------";
+echo "<br>";
+echo "PHP while loop";
+// syntax while(condition is true) {code to be executed};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
