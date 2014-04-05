@@ -1,0 +1,36 @@
+td {
+	 font-family: Verdana, Arial, Helvetica, sans-serif; 
+	font-size: 11px} 
+body {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	margin-bottom:2px;
+	margin-left:1px ! important ;
+	margin-right:1px;
+	margin-top:0px;
+
+	
+} 
+h1 { 
+	font-family: Verdana, Arial, Helvetica, sans-serif; 
+	font-size: 12px; 
+	font-weight: bold; color: #003399; 
+	text-decoration: none} 
+h2 { 
+	font-family: Verdana, Arial, Helvetica, sans-serif; 
+	font-size: 16px; color: #7885AF ; 
+	text-decoration: none} 
+a:hover { 
+}
+.text_normal{
+    	COLOR: #6666FF;
+   	FONT-SIZE: 12px;
+    	TEXT-DECORATION: none;
+}
+.topic{
+    	COLOR: #FF66cc;
+	TEXT-DECORATION: underline;
+}
+.bg{
+    	COLOR: #000000;
+}

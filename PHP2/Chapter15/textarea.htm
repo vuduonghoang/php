@@ -1,0 +1,63 @@
+<html>
+	<head>
+		<title>Welcome to JavaScript</title>
+		<link rel="stylesheet" type="text/css" href="../style.css">
+		<SCRIPT language=JavaScript>
+		   function CheckInput()
+		   {
+			if (document.frmEdit.txtDesc.value=="")
+			{
+				alert("Please enter your Description");
+				document.frmEdit.txtDesc.focus();
+				return false;
+			}
+			if (document.frmEdit.txtDesc.value.length>200)
+			{
+				alert("Please enter your Description < 200 characters");			
+				document.frmEdit.txtDesc.focus();
+				return false;
+			}				
+			return true;
+		  } 
+	function count() 		       	  				
+		{
+		document.frmEdit.txtCount.value=200-
+			document.frmEdit.txtDesc.value.length;
+		}
+
+		</script>
+	</head>
+	<body>
+	<div class=text_header>Java Script and TextArea tag</div>
+	<br>		
+	
+<table width="288">
+  <form name="frmEdit" method="post" action="jsdoreg.php?goto=" onSubmit="return CheckInput();">
+    <tr> 
+      <td>Description (maximum 100 characters)</td>
+    </tr>
+    <tr> 
+      <td valign="top"> 
+        <textarea name="txtDesc" rows="3" cols="40"  class="textbox" onKeyPress="count();"></textarea>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top">Job Require (maximum 16,000 characters)</td>
+    </tr>
+    <tr>
+      <td valign="top">
+        <textarea name="txtReq" rows="3" cols="40"  class="textbox">Please enter your requirement</textarea>
+      </td>
+    </tr>
+    <tr> 
+      <td align="left" class="text_normal" valign="top"> Characters of Description 
+        <input type="text" name="txtCount" size="5" maxlength="5"  class="textbox"> 
+        <br>
+        <input type="submit" style="width=80px" name="Update" value="Update" class="button">
+        <input type="reset" name="Reset" value="Reset" class="button">
+      </td>
+    </tr>
+  </form>
+</table>
+</body>
+</html>

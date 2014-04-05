@@ -1,0 +1,39 @@
+<HTML>
+<HEAD>
+<SCRIPT language=javascript>
+function MenuExplorer (iself,name1,name2,divID) {
+	if (iself.src.lastIndexOf(name1)==iself.src.length-name1.length) {	
+		iself.src = name2;
+		document.all[divID].style.display='';
+		
+	}
+	else {
+		iself.src = name1;
+		document.all[divID].style.display='none';
+	}
+}
+</SCRIPT>
+</HEAD>
+<BODY 
+text=#ffffff vLink=#ffffff aLink=#ffff00 link=#ffffff bgColor=#4895B6
+leftMargin=4 topMargin=8  marginheight="0" marginwidth="0">
+<TABLE >
+  <TBODY> 
+  <TR> 
+    <TD valign="top"> <font face="Arial, Helvetica, sans-serif" size="2">
+	 <IMG name=a onClick="MenuExplorer (this,'images/sub.gif','images/plus.gif','DIV01');" src="images/plus.gif">Database Platforms<br>
+      <SPAN id="DIV01"><img src="images/space.gif" height=1 width=29>SQL Server<br>
+      <img src="images/space.gif" height=1 width=29>Oracle<br>
+      <img src="images/space.gif" height=1 width=29>MySQL<br>
+      </SPAN> 
+	 <IMG name=b onClick="MenuExplorer (this,'images/plus.gif','images/sub.gif','DIV02');" 
+	  src="images/plus.gif">Web Technologies<BR>
+      <SPAN id="DIV02"><img src="images/space.gif" height=1 width=29>PHP 5.3<br>
+      <img src="images/space.gif" height=1 width=29>ASP.NET<br>
+      <img src="images/space.gif" height=1 width=29>Java Server Face<br>
+      </SPAN> </font></TD>
+  </TR>
+  </TBODY> 
+</TABLE>
+</BODY>
+</HTML>

@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<info>
+	<infoitem key="UD_EditCategoriesRecordset" value="name:CategoryId;datatype:int,name:CategoryName;datatype:string,name:GroupId;datatype:int" />
+	<infoitem key="UD_EditGroupsRecordset" value="name:GroupId;datatype:int,name:GroupName;datatype:string" />
+</info>

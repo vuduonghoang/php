@@ -1,0 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<info>
+	<infoitem key="UD_ViewItemsRecordset" value="name:ItemId;datatype:int,name:ItemName;datatype:string,name:Pages;datatype:int,name:Price;datatype:int,name:PublishYear;datatype:string,name:Edition;datatype:int,name:Size;datatype:string,name:Weight;datatype:real" />
+</info>

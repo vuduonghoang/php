@@ -1,0 +1,148 @@
+ <html>
+<head><title>Add and Remove between Select tags</title>
+<link rel="stylesheet" type="text/css" href="../style.css">
+<script language=javascript>
+ function ExchangeItem ( srcobj,desobj ) 
+	{
+	var i= srcobj.selectedIndex, j, k;
+	var bIns = false;
+	if (i==-1) return 0;
+	for (k=srcobj.options.length-1; k>=0; k--) {
+		bIns=false;
+		if (srcobj.options(k).selected==true) {
+
+			var f1=srcobj.options(k).text;
+			var f2=srcobj.options(k).value;
+			var total=desobj.options.length
+
+			var oOption = document.createElement("OPTION");
+			desobj.options.add(oOption);
+			oOption.innerText = f1;
+			oOption.value = f2;
+			oOption.selected= true;
+			srcobj.options.remove(k);
+		}
+	}
+	SortItem(srcobj);
+	SortItem(desobj);
+}
+function SortItem(obj) 
+{
+	var num= obj.options.length;
+	var i, j=0;	
+	var anArrayValue= new Array(num+1);
+	var anArrayText= new Array(num+1);
+	for ( i =0 ; i< num; i++){
+		anArrayText[i]= obj.options(i).text;
+		anArrayValue[i] = obj.options(i).value;
+	}
+
+	var valueTemp="";
+	var textTemp="";	
+
+
+	for (i =0 ; i< num  ; i++){
+		textTemp= anArrayText[i];
+		valueTemp= anArrayValue[i];
+		for (j= i + 1; j < num  ; j++){
+			if ( anArrayText[j] < textTemp){
+				anArrayText[i]=anArrayText[j];
+				anArrayText[j]= textTemp;
+				anArrayValue[i]=anArrayValue[j];
+				anArrayValue[j]= valueTemp;
+				valueTemp= anArrayValue[i];
+				textTemp= anArrayText[i];
+			}
+		}
+	}
+	for (i =num-1; i>=0 ; i--){ 
+
+		obj.options.remove(i);
+	}
+
+	for (i =0; i<num ; i++){
+		var oOption = document.createElement("OPTION");
+		obj.options.add(oOption);
+		oOption.innerText = anArrayText[i];
+		oOption.value =anArrayValue[i];
+
+		}
+	}	
+	
+	function SetVisible( yes ){
+		if (yes){
+			document.exchange.AvailableUsers.disabled= false;
+			document.exchange.AssignedUsers.disabled= false;
+			document.exchange.AddVisibled.disabled= false;
+			document.exchange.RemoveVisibled.disabled= false;
+		}else{
+			document.exchange.AvailableUsers.disabled= true;
+			document.exchange.AssignedUsers.disabled= true;
+			document.exchange.AddVisibled.disabled= true;
+			document.exchange.RemoveVisibled.disabled= true;
+		}
+	}
+
+</script>
+</head>
+<body>
+<form name="exchange" method=post>
+  <table border="0" cellspacing="1" 
+  cellpadding="0" width="379">
+    <tr> 
+      <td height='29' class='row_light'>
+	This Job assign To<br>
+        <input type=radio name='visibleTo' 
+	value="Everyone" 
+	checked onClick="SetVisible(false)">
+        Assign to me <br>
+        <input type=radio name='visibleTo' 
+	value="People in list"  
+	onClick="SetVisible(true)">
+        Assign to others<br>
+      </td>
+    </tr>
+    <tr> 
+      <td  class='row_light'> 
+        <table width=100% height="100%">
+          <tr>
+            <td>Available Users</td>
+            <td> </td>
+            <td>Assigned Users</td>
+          </tr>
+          <tr> 
+            <td valign="top"><select  disabled 
+	 style='WIDTH: 120px; HEIGHT: 100px'  
+	 name='AvailableUsers' class='textbox' 
+	size="1" multiple >
+              <option value="1"> Administrator</option>
+              <option value="2"> Designer</option>
+              <option value="3"> Contributor</option>
+              <option value="4"> Viewer</option>
+            </select></td>
+            <td> 
+              <input type=button  disabled  
+	name="AddVisibled" value="Add >>" 
+	style="width:90px"  class=button 
+	onClick="ExchangeItem(exchange.AvailableUsers,exchange.AssignedUsers)">
+              <br>
+              <input type=button  disabled  
+	name="RemoveVisibled" 
+	value="Remove <<" 
+	style="width:90px"  class=button 
+	onClick="ExchangeItem(exchange.AssignedUsers,exchange.AvailableUsers)">            </td>
+            <td valign="top"><select  disabled  
+	style='WIDTH: 120px; HEIGHT: 100px'  
+	name='AssignedUsers' class='textbox' 
+	size="1" multiple id="AssignedUsers " >
+              </select>            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+  <br>
+</form>
+</body>
+</html>
+

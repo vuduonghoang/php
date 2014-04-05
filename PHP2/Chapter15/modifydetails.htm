@@ -1,0 +1,1610 @@
+<HTML>
+<HEAD>
+<SCRIPT LANGUAGE="JavaScript1.2" TYPE="text/javascript">
+<!--
+function resizeIt() {
+  if (navigator.appName == 'Netscape') {
+    if (saveInnerWidth < window.innerWidth || 
+        saveInnerWidth > window.innerWidth || 
+        saveInnerHeight > window.innerHeight || 
+        saveInnerHeight < window.innerHeight ) 
+    {
+        window.history.go(0);
+    }
+  }
+}
+
+
+if (navigator.appName == 'Netscape') {
+  if(typeof window.saveInnerWidth == 'undefined') {
+    window.onresize = resizeIt;
+    window.saveInnerWidth = window.innerWidth;
+    window.saveInnerHeight = window.innerHeight;
+  }
+}
+//-->
+</SCRIPT>
+<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+<META HTTP-EQUIV="Content-Type" content="text/html; charset=utf-8">
+<META HTTP-EQUIV="Expires" CONTENT="Fri, 20 Mar 1997 18:05:00 GMT">
+<TITLE>Expense Report</TITLE>
+<script language="JavaScript" type="text/javascript">
+<!--
+
+top.hideDropDown ? top.hideDropDown(-1) : 1;
+
+if (top.ActiveFrameIdx >= 0 && top.ActiveIdx >= 0) {
+  var goodbyeFrameIdx = top.ActiveFrameIdx;
+  var goodbyeActiveIdx = top.ActiveIdx;
+  top.ActiveFrameIdx = 1;
+  top.ActiveIdx = top.AppIdIndex20;
+  top.turnMeOff(goodbyeFrameIdx, goodbyeActiveIdx);
+  top.turnMeOn(1, top.AppIdIndex20);
+}
+else if (top.turnMeOn) {
+  top.ActiveIdxString = 'top.AppIdIndex20';
+  top.ActiveFrameIdx = 1;
+  top.ActiveIdx = top.AppIdIndex20;
+  top.turnMeOn(1, top.AppIdIndex20);
+}
+
+if (typeof top.ADF == 'object') {
+   top.ADF.AppID = "20";
+   if (top.ADF.adframe) {
+       top.ADF.adframe.refresh();
+   }
+}
+top.LastScript    = "/expense/ExpenseReportDisplay.asp";
+top.QueryString   = "OID=27899";
+
+// -->
+</script>
+<STYLE TYPE='text/css'>
+<!--#navHeader {position:relative;}
+#navBody {position:relative;}
+#divSumm {position:relative;}
+-->
+</STYLE>
+<link rel="stylesheet" href="cssMaint/css.asp?scheme=17" type="text/css">
+<script language="javascript" TYPE="text/javascript">
+<!--
+// setimgsrc('img_name', 'new_src'); 
+function setimgsrc(imageName, imageLocation) { 
+  if (document.images) document.images[imageName].src = imageLocation;
+  return true; 
+} 
+
+
+//-->
+</script>
+<SCRIPT LANGUAGE=javascript TYPE="text/javascript">
+<!--
+
+//Global variables
+//Browser globals
+var isIE = (document.all ? true : false);
+var isNav = (document.layers ? true : false);
+var URL = window.location;
+URL = String(URL);
+URL = URL.toLowerCase(URL);
+var folder = URL.replace(/\/expensereportedit\.asp\D*\d*/,'')
+var Target = 'Frame_Hidden';
+var p = parent[Target];
+
+//Constants
+var tableContainer = 'navBody';
+var tableWidth = isIE ? 560:620;
+var cntr = 0;
+var cr = "\r";
+//-->
+</SCRIPT>
+
+<SCRIPT LANGUAGE=javascript TYPE="text/javascript">
+<!--
+//just defined some value constant
+var gErrDelay=false;
+var mileage_rate =0 ;
+var currency_prefix = '$&nbsp;';
+var currency_postfix = '';
+var mileage_label = 'Miles';
+var cat_names = new Array ('Ground Transportation','Hotel','Meals','Other');
+var cat_vals = new Array ('510','511','512','513');
+var list_page = 'ExpenseReportList.asp';
+var date_label = 'Date';
+var payee_label = 'Payee (for example, the hotel or vendor name)';
+var type_label = 'Type';
+var desc_label = 'Description';
+var amount_label = 'Amount';
+var total_label = 'Total';
+var cashadvance_label = 'Less Cash Advance';
+var amountdue_label = 'Amount Due';
+var image_dir = '/images/us';
+var add_mileage = 'Add a Mileage Expense Item';
+var add_regular = 'Add a Regular Expense Item';
+var delete_label = 'Delete Expense Item';
+var confirm_delete = 'Are you sure you want to delete item ';
+var date_compare = 'Start date is less than End date.';
+var date_picker_order = 0;
+var Months = new Array('Jan', 'Feb', 
+                       'Mar', 'Apr', 
+                       'May', 'Jun', 
+                       'Jul', 'Aug', 
+                       'Sep', 'Oct', 
+                       'Nov', 'Dec');
+var err_amount_pos = 'The amount must be positive for expense item ';
+var date_item = 'date in item ';
+var err_item_revert = 'The expense item will revert to your previous value.';
+var amount_cashadv = 'for cash advance';
+var amount_item = 'for amount in expense item ';
+var invalid_entry = 'Invalid entry ';
+var save_report = 'Save Current Report';
+var cancel_report = 'Cancel Changes to Current Report';
+//-->
+</SCRIPT>
+<SCRIPT LANGUAGE=javascript TYPE="text/javascript">
+<!--
+var cat_thenames = new Array();
+for (i=0;i < cat_vals.length;i++){
+	cat_thenames[cat_vals[i]] = cat_names[i];
+}
+
+//***************************************************************************************************************************
+//Flags
+//***************************************************************************************************************************
+var addFlag = false;
+var changedFlag = false;
+
+//***************************************************************************************************************************
+//Date globals
+//***************************************************************************************************************************
+var theDate = new Date();
+theMonth = theDate.getMonth()+1;
+theDay = theDate.getDate();
+theYear = theDate.getFullYear();
+
+//***************************************************************************************************************************
+//Object Definitions
+//***************************************************************************************************************************
+function Info(){
+//Constructor for Info Object,construct object Info
+	this.startmonth = theMonth;
+	this.startday = theDay;
+	this.startyear = theYear;
+	this.endmonth = theMonth;
+	this.endday = theDay;
+	this.endyear = theYear;
+	this.cashadvance = 0;
+	this.purpose;
+	this.status;
+	this.footer = '';
+	this.amountdue = 0;
+	this.total = 0;
+}
+
+function Table(){
+//Constructor for Table Object,construct object Table
+	this.AddRow = TableAddRow;
+	this.name = 'Expenses';
+	this.id;
+	this.siteid;
+	this.tabletext;
+	this.changedFlag = false;
+	this.ChangeRowAmountType = TableRowChangeAmountType;
+	this.Draw = TableDraw;
+	this.GetFooter = TableFooterDraw;
+	this.GetHeader = TableHeaderDraw;
+	this.GetRowCount = TableRowCount;
+	this.rows = new Array();
+	this.DeleteRow = TableDeleteRow;
+}
+
+function TableRow(){
+//Constructor for Table Row Object,construct rowtable
+	this.month = theMonth;
+	this.day = theDay;
+	this.year = theYear;
+	this.cat = 0;
+	this.payee = '';
+	this.amount = 0;
+	this.desc = '';
+	this.milesFlag = false;
+	this.deletedFlag = false;
+	this.dbFlag = false;
+	this.rowtext;
+	this.CreateRowText = RowCreateText;
+	this.rowIDX=0;
+	this.errorFlag=0;
+}
+
+//***************************************************************************************************************************
+//Header functions
+//***************************************************************************************************************************
+
+function HeaderDateList(datetype, inDay){
+//used for Date of each row
+//Called from RowCreateText()
+//Added inDay to be able to preset the date in the dropdown list
+//inDay can also be used if called from another function to show a particular date as long as it is passed in
+	var SelectBeg = '<SELECT ID="' + datetype + 'Date" NAME="' + datetype + 'Date" '
+	              + 'onChange="theInfo.' + datetype + 'day = ' + datetype + 'Date.selectedIndex + 1;">'
+	var SelectEnd = '<\/SELECT>';
+	var optionBeg = '<OPTION>';
+	var optionBegSel = '<OPTION SELECTED>';
+	var optionEnd = '<\/OPTION>';
+	var newline = '\n\t\t\t';
+	var tab = '\t';
+	var temp = newline + SelectBeg + newline;
+	for (i = 1; i < 32; ++i){
+	   if (i == inDay) {
+	   temp += tab + optionBegSel + i + optionEnd;
+	   }
+	   else{
+	   temp += tab + optionBeg + i + optionEnd;
+	   }
+	}
+	temp += newline + SelectEnd + newline;
+	return temp;
+}
+
+function HeaderMonthList(datetype, inMonth){
+//user for creating month list
+	var monthIndex = inMonth > 0? inMonth -1: inMonth;
+	var args = HeaderMonthList.arguments;
+	//var Months = new Array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
+	var SelectBeg = '<SELECT ID="' + datetype + 'Month" NAME="' + datetype + 'Month" '
+	              + 'onChange="theInfo.' + datetype + 'month =' + datetype + 'Month.selectedIndex + 1;">'
+	var SelectEnd = '<\/SELECT>';
+	var optionBeg = '<OPTION';
+	var optionBegSel = '<OPTION SELECTED';
+	var optionEnd = '<\/OPTION>';
+	var newline = '\n\t\t\t';
+	var tab = '\t';
+	var temp = newline + SelectBeg + newline;
+	for (i = 0; i < 12; ++i){
+	   if (i == monthIndex) {
+	   temp += tab + optionBegSel + ' VALUE="' + (i+1) + '">' + Months[i] + optionEnd;
+	   }
+	   else{
+	   temp += tab + optionBeg + ' VALUE="' + (i+1) + '">' + Months[i] + optionEnd;
+	   }
+	}
+	temp += newline + SelectEnd + newline;
+	return temp;
+}
+
+function HeaderYearList(datetype, inYear){
+//user for creating year list
+//Called from RowCreateText()
+	var SelectBeg = '<SELECT ID="' + datetype + 'Year" NAME="' + datetype + 'Year" '
+		          + 'onChange="theInfo.' + datetype + 'year =' + datetype + 'Year.selectedIndex+1999;">'
+	var SelectEnd = '<\/SELECT>';
+	var optionBeg = '<OPTION>';
+	var optionBegSel = '<OPTION SELECTED>';
+	var optionEnd = '<\/OPTION>';
+	var newline = '\n\t\t\t';
+	var tab = '\t';
+	var temp = newline + SelectBeg + newline;
+	for (i = 1999; i < 2004; ++i){
+	   if (i == inYear) {
+	   temp += tab + optionBegSel + i + optionEnd;
+	   }
+	   else{
+	   temp += tab + optionBeg + i + optionEnd;
+	   }
+	}
+	temp += newline + SelectEnd + newline;
+	return temp;
+}
+
+function Load_Div(divName, divText){
+   //alert('Load Div : '+ divName);
+   if (isNav){
+       //For Netscape
+       var theLayer = eval('window.document.layers["' + divName + '"]');
+       var theDoc = theLayer.document;
+       theDoc.open();
+       theDoc.write(divText);
+       theDoc.close();
+   }
+   else{
+       //For IE
+      var theDiv = document.all ? eval("document.all." + divName) : eval("document.getElementById('" + divName + "')");
+      theDiv.innerHTML = divText;
+   }
+}
+
+function LoadAddBtn(){	
+//for creating AddBtn for item of record
+    var Temp = '     <a href="JavaScript:ButtonAction(\'AddRegular\')">';
+   // Temp +=  '     <img src="'+image_dir+'/btn_AddItemReg.gif" name="AddRegularItem" alt="'+add_regular+'" border="0"><\/a>';
+   		Temp +=  ' <input type=button class=button name="AddRegularItem" value="Add Regular Item" onclick="JavaScript:ButtonAction(\'AddRegular\')"></a>'
+    Temp +=  '     <a href="JavaScript:ButtonAction(\'AddMileage\')">';
+    //Temp +=  '     <img src="'+image_dir+'/btn_AddItemMlg.gif" name="AddMileageItem" alt="'+add_mileage+'" border="0"><\/a>';
+	Temp+='<input type=button  class= button name="AddMileageItem" value="Add Mile Item" onclick="JavaScript:ButtonAction(\'AddMileage\')">'
+    return Temp;
+}
+
+function LoadSaveCancelBtn(){
+// for creating Save or Cancel Button	
+    var Temp = '     <a href="JavaScript:ButtonAction(\'SavePrint\')">';
+    //Temp +=  '     <img src="'+image_dir+'/save.gif" name="Save2" alt="'+save_report+'" border=0><\/a>';
+    Temp+='<input type=button class=button name=Save value="Save" onclick="JavaScript:ButtonAction(\'SavePrint\')"></a>'
+	Temp +=  '     <a href="JavaScript:ButtonAction(\'Cancel\')">';
+    //Temp +=  '     <img src="'+image_dir+'/cancel.gif" name="Cancel2" alt="'+cancel_report+'" border=0><\/a>';
+	Temp +=	'<input type=button class= button name=Cancel value="Cancel" onclick="JavaScript:ButtonAction(\'Cancel\')"></a>'	
+    return Temp;
+}
+
+function LoadSumTable(){
+// for creating Sum table	
+    var Temp = '<TABLE BORDER=0 CELLSPACING=0>' + cr; //'<table cols=1 width=800>';
+	Temp +=  '	<TR>' + cr;
+	Temp +=  '		<TD width="40%"><\/TD>' + cr;
+	Temp +=  '		<TD width="40%"><\/TD>' + cr;
+	Temp +=  '		<TD width="10%"><\/TD>' + cr;
+	Temp +=  '	<\/TR>' + cr;
+	Temp +=  '	<TR>' + cr;
+	Temp += '		<td align=right class=text_normal>'+total_label+':  <\/td>';
+	Temp += '		<td id="expAmountTotal" align=right class=text_normal>' + currency_prefix + jsCurrencyToText(theInfo.total) + currency_postfix +'<\/td>';
+	Temp +=  '	<\/TR>' + cr;
+	Temp +=  '	<TR>' + cr;
+	Temp += '		<td align=right class=text_normal>'+cashadvance_label+':  <\/td>' + cr;
+	Temp += '       <td align=right class=text_normal>' + currency_prefix;
+    Temp += ' <input type=text class=textbox name="CashAdvance" size=8 value="' + jsCurrencyToText(theInfo.cashadvance) + '"';
+	Temp += ' onBlur="changedFlag=true;var trimVal = Trim(CashAdvance.value);';
+	Temp += ' var retCurrIn = AmountIn(trimVal,2,\''+amount_cashadv+'\');';
+	Temp += ' (isNaN(retCurrIn) ? displayError(retCurrIn):theInfo.cashadvance=retCurrIn);';
+	Temp += ' delayUpdate();">'+ currency_postfix;
+    Temp += '		<\/td>' + cr;
+	Temp +=  '	<\/TR>' + cr;
+	Temp +=  '	<TR>' + cr;
+	Temp +=  '		<TD><\/TD>' + cr;
+	Temp += '		<td align=center class=text_normal><b>---------------<\/b><\/td>';
+	Temp +=  '	<\/TR>' + cr;
+	Temp +=  '	<TR>' + cr;
+	Temp += '		<td align=right class=text_normal>'+amountdue_label+': <\/td>';
+	Temp += '		<td id="expAmountDue" align=right class=text_normal>' + currency_prefix + jsCurrencyToText(theInfo.amountdue) + currency_postfix +'<\/td>';
+	Temp +=  '	<\/TR>' + cr;
+	Temp += '<\/table>';
+
+    return Temp;
+}
+
+function LoadFooter(){	
+//for creatting end part of form
+    var Temp = '<FORM name="SumTable" action="Javascript:ButtonAction(\'Save\')">' + cr;
+    Temp += '<TABLE WIDTH="' + tableWidth + '" BORDER=0 CELLSPACING=0>' + cr; //'<table cols=1 width=800>';
+	Temp += '<TR>' + cr;
+    Temp += ' <TD VALIGN="TOP" width="70%">' + cr;
+    Temp += LoadAddBtn();
+    Temp += ' <\/TD>' + cr;
+	Temp += ' <TD width="70%">' + cr;
+    Temp += LoadSumTable();	
+	Temp += ' <\/TD>' + cr;
+	Temp += '<\/TR>'+ cr;
+    Temp += '<TR>' + cr;
+    Temp += ' <TD VALIGN="TOP">' + cr;
+    Temp += LoadSaveCancelBtn();
+    Temp += ' <\/TD>' + cr;
+	Temp += '<\/TR>'+ cr;
+	Temp += '<\/TABLE>' + cr;
+    Temp += '<\/FORM>' + cr;
+
+    return Temp;
+}
+
+//***************************************************************************************************************************
+//Start the Table functions
+//***************************************************************************************************************************
+
+
+function TableAddRow(bMileage){
+//the AddRow() method of the Table object
+	var args = TableAddRow.arguments;
+	var i = 0;
+	var rownumber = this.rows.length;
+	this.rows[rownumber] = new TableRow();
+	if (args.length > 1){
+		this.rows[rownumber].month = args[0];
+		this.rows[rownumber].day = args[1];
+		this.rows[rownumber].year = args[2];
+		this.rows[rownumber].cat = args[3];
+		this.rows[rownumber].payee = args[4];
+		this.rows[rownumber].amount = args[5];
+		this.rows[rownumber].desc = args[6];
+		this.rows[rownumber].dbFlag = true;
+		this.rows[rownumber].milesFlag = RowCategoryList(args[3],false);
+		this.rows[rownumber].rowtext = '';
+	}else{
+        this.rows[rownumber].cat = cat_vals[0];
+		this.rows[rownumber].rowtext = '';
+        if (args.length == 1 && bMileage){
+           this.rows[rownumber].cat = "-1"; //Mileage
+           this.rows[rownumber].milesFlag = true;
+        }
+	}
+	addFlag = true;
+	
+}
+
+function TableDraw(){
+//the Draw() method of the Table object
+	var theDelimiter = ';\t';
+	var tableLocation = tableContainer;
+	var args = TableDraw.arguments;
+		
+		var newline = '\n\t\t\t';
+		var theRows = this.rows;
+		var tableText = this.tabletext;
+		tableText = this.rows.length == 0?'<FORM id="frmTest2" name="frmTest2" action=""><TABLE WIDTH="' + tableWidth + '" NAME="" BORDER=0 CELLSPACING=0>':this.GetHeader();
+		//Get the prior rows data
+		var rowCount = this.GetRowCount();
+		//put the value of row in hidden input here
+		frmHeader.totalRow.value=rowCount;
+		var i = 0;
+        var rowIDX=0;
+		for(i=0;i<rowCount;i++){
+            if (theTable.rows[i].deletedFlag){
+              continue;
+            }
+
+            theTable.rows[i].rowIDX = ++rowIDX;
+
+            //Put a global var for addition of row and only execute if an addition
+            if (addFlag && rowCount>1){
+                theRows[rowCount - 1].month = theRows[rowCount - 2].month;
+                theRows[rowCount - 1].day = theRows[rowCount - 2].day;
+                theRows[rowCount - 1].year = theRows[rowCount - 2].year;
+                //addFlag = false;
+            }
+            theRows[i].rowtext = theRows[i].CreateRowText(i);
+
+            theRows[i].changedFlag = 'False';
+
+			tableText +=  theRows[i].rowtext + newline;
+
+		}
+		//addFlag = false;
+		tableText += this.GetFooter();
+        tableText += newline;
+
+        Load_Div(tableLocation, tableText);
+        //jsDebugWindow(tableText);
+	
+	if (addFlag){
+		//Set focus to the new row's month select box
+		addFlag = false;
+	}
+		//alert(tableText);
+	return tableText;
+	
+}
+
+function TableFooterDraw(){
+//the GetFooter() method of the Table object
+	var tempFooter = '<\/TABLE>\n'
+			       + '<\/FORM>\n';
+	tempFooter = isNav ? tempFooter + theInfo.footer: tempFooter;
+	//alert(tempFooter);
+	return tempFooter;
+}
+
+function TableHeaderDraw(){
+//the GetHeader() method of the Table object
+	var cr = '\r';
+	var HeaderTotal = '<FORM id="frmTest2" name="frmTest2" action="">' + cr;
+	
+    // Add Spacer
+    HeaderTotal +=  '<hr align="left" width="' + tableWidth + '">' + cr;
+
+    HeaderTotal += '<TABLE WIDTH="' + tableWidth + '" BORDER=0 CELLSPACING=0>' + cr;
+	HeaderTotal +=  '	<TR>' + cr;
+	HeaderTotal +=  '		<TD width="4%"><\/TD>' + cr;
+	HeaderTotal +=  '		<TD width="2%"><\/TD>' + cr;
+	HeaderTotal +=  '		<TD width="9%"><\/TD>' + cr;
+	HeaderTotal +=  '		<TD width="8%"><\/TD>' + cr;
+	HeaderTotal +=  '		<TD width="9%"><\/TD>' + cr;
+	HeaderTotal +=  '		<TD width="2%"><\/TD>' + cr;
+	HeaderTotal +=  '		<TD width="11%"><\/TD>' + cr;
+	HeaderTotal +=  '		<TD width="2%"><\/TD>' + cr;
+	HeaderTotal +=  '		<TD width="35%"><\/TD>' + cr;
+	HeaderTotal +=  '		<TD width="15%"><\/TD>' + cr;
+	HeaderTotal +=  '		<TD width="3%"><\/TD>' + cr;
+	HeaderTotal +=  '	<\/TR>' + cr;
+
+    return HeaderTotal;
+}
+
+function TableRowChangeAmountType(rownumber){
+//Could grab the number in the array and change that particular row
+	var priorFlag = this.rows[rownumber].milesFlag;
+	var valCat =  this.rows[rownumber].cat;
+	var bValCat = RowCategoryList(valCat,false);
+	this.rows[rownumber].milesFlag = bValCat;
+	if (this.rows[rownumber].milesFlag != priorFlag){
+		this.rows[rownumber].amount = 0;
+		var RowText = RowCreateText(rownumber, this.rows[rownumber]);
+		this.rows[rownumber].rowtext = RowText;
+		changedFlag = true;
+		update();
+		if (isIE)
+			theTable.Draw();
+	}
+	return RowText;
+}
+
+function TableRowCount(){
+//the GetRowCount() method of the Table object
+	var rownumber = this.rows.length;
+	return rownumber;
+}
+
+function TableDeleteRow(rownumber){
+//the DeleteRow() method of the Table object
+	var args = TableDeleteRow.arguments;
+	
+    //var theRows = this.rows;
+	this.rows[rownumber].deletedFlag = true;
+
+    var RowText = "";
+    this.rows[rownumber].rowtext = RowText;
+
+	top.resizeFlag = false;
+	this.Draw();
+
+	return RowText;
+}
+
+function RowCreateText(rownumber){
+//Needs the following functions to create the row
+//RowMonthList(), RowDateList(), RowYearList() and RowCategoryList() function calls are made
+//Called by the Table object via the AddRow method with the rownumber as the only argument
+//Called by the TableRowChangeAmountType function with the rownumber, colNumber and NewColText as the arguments
+	var args = RowCreateText.arguments;
+	switch (args.length){
+		case 2:
+		//Will include inputed month(args[1]), day(args[2]), year(args[3]), payee(args[4]) and amount(args[4])
+		//and also the AddRow method of the Row object when preloading a new table
+			var thisRow = args[1];
+			var inMonth = thisRow.month;
+			var inDay = thisRow.day;
+			var inYear = thisRow.year;
+			var inCat = thisRow.cat;
+			var inPayee = thisRow.payee;
+			var inAmount = thisRow.amount;
+			var inDesc = thisRow.desc;
+			var inMilesFlag = thisRow.milesFlag;
+			var inDelFlag = thisRow.deletedFlag;
+			var inRowIDX = thisRow.rowIDX;
+			var inErrorFlag = thisRow.errorFlag;
+		break
+		default:
+			var inMonth = this.month;
+			var inDay = this.day;
+			var inYear =this.year;
+			var inCat = this.cat;
+			var inPayee = this.payee;
+			var inAmount = this.amount;
+			var inDesc = this.desc;
+			var inMilesFlag = this.milesFlag;
+			var inDelFlag = this.deletedFlag;
+			var inRowIDX = this.rowIDX;
+			var inErrorFlag = this.errorFlag;
+	}
+
+    inPayee = jsHTMLEncode(inPayee);
+    inDesc = jsHTMLEncode(inDesc);
+
+    // Reset Error Flag
+    this.errorFlag = false;
+	var cr = '\r';
+
+    // Delete Icon
+    var strDelIcon = '<A ID="TR' + rownumber + 'Del" NAME="TR' + rownumber + 'Del" '
+             + 'href="JavaScript:ButtonAction(\'DeleteRow\',' + rownumber + ');">'
+             + '<IMG alt="'+delete_label+'" border="0" src="iconDelete.gif"'
+             + ' HEIGHT="16" WIDTH="16" ID="Delete' + rownumber + '" NAME="Delete' + rownumber + '"><\/A>';
+
+    var strDesc = '<INPUT type="text" class= textbox id="TR' + rownumber + 'Desc" name="TR' + rownumber
+                + 'Desc" value="' + inDesc + '" SIZE="'+((inMilesFlag)?'25':'35') + '" maxlength="256"'
+                + 'onChange="theTable.rows[' + rownumber + '].desc =TR' + rownumber + 'Desc.value;'
+                + 'theTable.changedFlag = true;">';
+    // alert(strDesc);           
+
+	var strMiles = ' <TD ID="TR' + rownumber + 'TD4">'
+	            + '<INPUT type="text"	class= textbox  id="TR' + rownumber + 'Amount" name="TR' + rownumber
+	            + 'Amount" value="' + jsMileageToText(inAmount) + '" SIZE="7" '
+	            + 'onBlur="changeAmount(TR' + rownumber + 'Amount,' + rownumber + ',true);">'
+	            + '<\/TD>'+cr;	
+
+	var strDollars = ' <TD ID="TR' + rownumber + 'TD4" class=text_normal>'
+	            + currency_prefix + '<INPUT type="text"	class= textbox  id="TR' + rownumber + 'Amount" name="TR' + rownumber
+	            + 'Amount" value="' + jsCurrencyToText(inAmount) + '" SIZE="7" '
+	            + 'onBlur="changeAmount(TR' + rownumber + 'Amount,' + rownumber + ',false);">'+ currency_postfix
+	            + '<\/TD>'+cr;
+
+	// Begin Row Table
+    var Row = '';
+
+    // 1st Row Begin
+	Row += '<TR>'+cr;
+
+	Row += ' <TD BGCOLOR="'+((inErrorFlag)?"red":"#cccccc")+'" class=fld-std-bold valign="TOP" align="CENTER" '
+	     + ' ROWSPAN='+((inMilesFlag)?'"2"':'"4"')+'>'+inRowIDX+'<\/TD>'+cr;
+
+	Row += ' <TD ROWSPAN='+((inMilesFlag)?'"2"':'"4"')+'>&nbsp;<\/TD>'+cr;
+
+    // Date Label
+	Row += ' <TD COLSPAN="3" class=text_normal>'+date_label+'<\/TD>'+cr;
+	
+	Row += ' <TD ROWSPAN="2">&nbsp;<\/TD>'+cr;
+
+    if (inMilesFlag) {
+       // Miles Label
+       Row += ' <TD class=text_normal>'+mileage_label+'<\/TD>'+cr;
+
+       Row += ' <TD ROWSPAN="2">&nbsp;<\/TD>'+cr;
+
+       // Description Label
+       Row += ' <TD COLSPAN="3" class=text_normal>'+desc_label+'<\/TD>'+cr;
+
+    } else {
+       // Payee Label
+       Row += ' <TD COLSPAN="5" class=text_normal>'+payee_label+'<\/TD>'+cr;
+
+    }
+
+    // 1st Row End
+	Row += '<\/TR>'+cr;
+
+    // 2nd Row Begin
+	Row += '<TR ID="TR' + rownumber + '">'+cr;
+
+    // Date Picker
+    if (date_picker_order == 1) {
+        Row += '		<TD ID="TR' + rownumber + 'TD1B" width="40">' + RowDateList(rownumber,inDay) + '<\/TD>'
+	            + '		<TD ID="TR' + rownumber + 'TD1A" width="54">' + RowMonthList(rownumber, inMonth) + '<\/TD>'
+	            + '		<TD ID="TR' + rownumber + 'TD1C" width="54">' + RowYearList(rownumber, inYear) + '<\/TD>'+cr;
+    }
+    else if (date_picker_order == 2) {
+        Row += '		<TD ID="TR' + rownumber + 'TD1C" width="54">' + RowYearList(rownumber, inYear) + '<\/TD>'
+	            + '		<TD ID="TR' + rownumber + 'TD1A" width="54">' + RowMonthList(rownumber, inMonth) + '<\/TD>'
+	            + '		<TD ID="TR' + rownumber + 'TD1B" width="40">' + RowDateList(rownumber,inDay) + '<\/TD>'+cr;
+    }
+    else
+        Row += '		<TD ID="TR' + rownumber + 'TD1A" width="54">' + RowMonthList(rownumber, inMonth) + '<\/TD>'
+	            + '		<TD ID="TR' + rownumber + 'TD1B" width="40">' + RowDateList(rownumber,inDay) + '<\/TD>'
+	            + '		<TD ID="TR' + rownumber + 'TD1C" width="54">' + RowYearList(rownumber, inYear) + '<\/TD>'+cr;
+
+    if (inMilesFlag) {
+       // Miles
+       Row += strMiles;
+
+       // Description
+       Row += ' <TD ID="TR' + rownumber + 'TD6" ALIGN="left">' + strDesc + ' <\/TD>'+cr;
+
+       // Amount Due
+       var inAmountDue = (inAmount?jsComputeMileageExpense(inAmount, mileage_rate):0);
+       Row += ' <TD ID="TR' + rownumber + 'MTotal" align=left class=text_normal>' + currency_prefix
+              + jsCurrencyToText(inAmountDue) + currency_postfix + '<\/TD>'+cr;
+
+       // Delete Icon
+       Row += ' <TD ID="TR' + rownumber + 'TD5" width="*" valign="MIDDLE" align="left">'
+                   + strDelIcon + ' <\/TD>'+cr;
+
+    } else {
+       // Payee
+       Row += ' <TD ID="TR' + rownumber + 'TD3" COLSPAN="5">'
+                   + '<INPUT type="text"	class= textbox  id="TR' + rownumber + 'Payee" name="TR'
+                   + rownumber + 'Payee" value="' + inPayee + '" SIZE="35" maxlength="256"  '
+                   + 'onChange="theTable.rows[' + rownumber + '].payee =TR' + rownumber + 'Payee.value;'
+                   + 'theTable.changedFlag = true;">'
+                   + '<\/TD>'+cr;
+    }
+
+    // 2nd Row End
+	Row += '<\/TR>'+cr;
+
+    if (!inMilesFlag) {
+
+       // 3rd Row Begin
+       Row += '<TR>'+cr;
+
+       // Category Label
+       Row += ' <TD COLSPAN="4" class=text_normal>'+type_label+'<\/TD>'+cr;
+
+       // Description Label
+       Row += ' <TD COLSPAN="3" class=text_normal>'+desc_label+'<\/TD>'+cr;
+
+       // Amount Label
+       Row += ' <TD COLSPAN="2" class=text_normal>&nbsp;&nbsp;&nbsp;&nbsp;'+amount_label+'<\/TD>'+cr;
+
+       // 3rd Row End
+       Row += '<\/TR>'+cr;
+
+       // 4th Row Begin
+       Row += '<TR>'+cr;
+
+       // Category
+       Row += ' <TD ID="TR' + rownumber + 'TD2" COLSPAN="4" >' + RowCategoryList(rownumber, '',inCat) + '<\/TD>'+cr;
+
+       // Description
+       Row += ' <TD ID="TR' + rownumber + 'TD6" COLSPAN="3" ALIGN="left">'
+                      + strDesc + ' <\/TD>'+cr;
+
+       Row += strDollars;
+   	
+       // Delete Icon
+       Row += ' <TD ID="TR' + rownumber + 'TD5" width="*" valign="MIDDLE" align="left">'
+                + strDelIcon + '<\/TD>'+cr;
+
+       // 4th Row End
+       Row += '<\/TR>'+cr;
+    }
+    // Add Spacer
+    Row += '<tr><td colspan=11><hr><\/td><\/tr>'+cr;
+	//alert(Row);
+	return Row;
+}
+
+function RowCategoryList(rownumber, bRetFlag){
+//Called from RowCreateText()
+//Change to for loop
+	var args = RowCategoryList.arguments;
+	var Cats = args.length == 3 ? cat_names : cat_thenames;
+	var CatVals = cat_vals;
+	if (args.length == 3){
+		var inCat = args[2];
+		var SelectBeg = '<SELECT ID="TR' + rownumber + 'Cat" NAME="TR' + rownumber + 'Cat" '
+		              + 'onchange="theTable.rows[' + rownumber + '].cat=cat_vals[TR' + rownumber + 'Cat.selectedIndex];'
+		              + 'theTable.changedFlag = true;'
+		              + 'theTable.ChangeRowAmountType(' + rownumber + ')">';
+		var SelectEnd = '<\/SELECT>';
+		var optionBeg = '<OPTION ';
+		var optionEnd = '<\/OPTION>';
+		var selectedText = 'SELECTED';
+					
+		var newline = '\n\t\t\t';
+		var tab = '\t';
+		var temp = newline + SelectBeg + newline;
+		for (i = 0; i < Cats.length; ++i){
+           // Do not Include Mileage Items
+           if (!(CatVals[i]==-1)) {
+      		   if (CatVals[i] == inCat) {
+      		   	  temp += tab + optionBeg + ' value="' + CatVals[i] + '" '
+      		            + selectedText + '>' + Cats[i] + optionEnd + newline;
+      		   }
+      		   else{
+      		   	  temp += tab + optionBeg + ' value="' + CatVals[i] + '" '
+      		            + '>' + Cats[i] + optionEnd + newline;
+      		   }
+            }
+		}
+		temp += newline + SelectEnd + newline;
+	}else{
+		//if the second arg = a boolean then do the following else do the loading method
+		//true to return the text value; false to return the boolean value
+		if (bRetFlag == true)
+			return Cats[rownumber];
+		if (bRetFlag == false)
+			return ((rownumber==-1)?true :false);
+		if (bRetFlag == 3)
+			for (i=0;i<cat_vals.length;i++){
+				if (cat_vals[i] == rownumber)
+					return i;
+			}
+	}
+	return temp;
+}
+
+function RowDateList(rownumber, inDay){
+//Called from RowCreateText()
+//Added inDay to be able to preset the date in the dropdown list
+//inDay can also be used if called from another function to show a particular date as long as it is passed in
+	var SelectBeg = '<SELECT ID="TR' + rownumber + 'Date" NAME="TR' + rownumber + 'Date" '
+	              + 'onChange="theTable.rows[' + rownumber + '].day =TR' + rownumber + 'Date.selectedIndex + 1;'
+	              + 'theTable.changedFlag = true;">';
+	var SelectEnd = '<\/SELECT>';
+	var optionBeg = '<OPTION>';
+	var optionBegSel = '<OPTION SELECTED>';
+	var optionEnd = '<\/OPTION>';
+	var newline = '\n\t\t\t';
+	var tab = '\t';
+	var temp = newline + SelectBeg + newline;
+	for (i = 1; i < 32; ++i){
+	   if (i == inDay) {
+	   temp += tab + optionBegSel + i + optionEnd;
+	   }
+	   else{
+	   temp += tab + optionBeg + i + optionEnd;
+	   }
+	}
+	temp += newline + SelectEnd + newline;
+	//alert(temp);
+	
+	return temp;
+}
+
+function RowMonthList(rownumber, inMonth){
+//Called from RowCreateText()
+	var monthIndex = inMonth > 0? inMonth -1: inMonth;
+	var args = RowMonthList.arguments;
+	//var Months = new Array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
+	if (args.length == 1){
+		temp = Months[rownumber-1];
+	}
+	else
+	{
+		var SelectBeg = '<SELECT ID="TR' + rownumber + 'Month" NAME="TR' + rownumber + 'Month" '
+		              + 'onChange="theTable.rows[' + rownumber + '].month =TR' + rownumber + 'Month.selectedIndex + 1;'
+		              + 'theTable.changedFlag = true;">';
+		var SelectEnd = '<\/SELECT>';
+		var optionBeg = '<OPTION>';
+		var optionBegSel = '<OPTION SELECTED>';
+		var optionEnd = '<\/OPTION>';
+		var newline = '\n\t\t\t';
+		var tab = '\t';
+		var temp = newline + SelectBeg + newline;
+		for (i = 0; i < 12; ++i){
+		   if (i == monthIndex) {
+		   temp += tab + optionBegSel + Months[i] + optionEnd;
+		   }
+		   else{
+		   temp += tab + optionBeg + Months[i] + optionEnd;
+		   }
+		}
+		temp += newline + SelectEnd + newline;
+	}
+	return temp;
+}
+
+function RowYearList(rownumber, inYear){
+//Called from RowCreateText()
+	var SelectBeg = '<SELECT ID="TR' + rownumber + 'Year" NAME="TR' + rownumber + 'Year" '
+		          + 'onChange="theTable.rows[' + rownumber + '].year =TR' + rownumber + 'Year.selectedIndex+1999;'
+		          + 'theTable.changedFlag = true;">';
+	var SelectEnd = '<\/SELECT>';
+	var optionBeg = '<OPTION>';
+	var optionBegSel = '<OPTION SELECTED>';
+	var optionEnd = '<\/OPTION>';
+	var newline = '\n\t\t\t';
+	var tab = '\t';
+	var temp = newline + SelectBeg + newline;
+	for (i = 1999; i < 2004; ++i){
+	   if (i == inYear) {
+	   temp += tab + optionBegSel + i + optionEnd;
+	   }
+	   else{
+	   temp += tab + optionBeg + i + optionEnd;
+	   }
+	}
+	temp += newline + SelectEnd + newline;
+	return temp;
+}
+
+
+//***************************************************************************************************************************
+//Utility functions
+//***************************************************************************************************************************
+
+function jsDebugWindow(text)
+{
+    var debugwin = window.open("/expense/debug.html", "debugwin");
+    debugwin.document.open("text/html", "replace");
+    debugwin.document.write(text);
+    debugwin.document.close();
+}
+
+function jsHTMLEncode(text)
+{
+   var i,t,c;
+   t='';
+   c='';
+   for (i=0;i<=text.length;i++) {
+      c=text.charAt(i);
+      switch (c) {
+        case '<': c='&lt;';  break;
+        case '>': c='&gt;';  break;
+        case '"': c='&quot;';break;
+        case '&': c='&amp;'; break;
+      }
+      t=t+c;
+   }
+   return t;
+}
+
+function jsMileageToText( number ){
+  return Replace(String(number),".",jsDec);
+}
+
+//***************************************************************************************************************************
+//Validation functions
+//***************************************************************************************************************************
+
+function numericCheck(p_val){
+	for(i=0; i<p_val.length; i++){
+		if (p_val.substring(i, i+1)<"0" || p_val.substring(i, i+1)>"9"){
+			return(false);
+		}
+	}
+	return(true);
+}
+
+function AmountIn( p_string, test, what ){
+	
+    p_string = String(p_string);
+
+    var v_result = "";
+	var v_err = invalid_entry + "'" + p_string + "' " + what;
+	var v_offset = p_string.length;
+	var v_point;		// decimal point
+	var v_maxdec= (test == 2)?2:4; 	// max decimal point
+
+	if(p_string == ''){
+       return(0)
+	}
+
+	v_point = p_string.lastIndexOf(jsDec, v_offset); // search decimal point
+
+	if (v_point >=0){
+		v_result = p_string.substring(v_point + 1, v_offset);
+		if ((numericCheck(v_result) == true) && (v_result.length <= v_maxdec)){
+			v_result = "." + v_result;
+			v_point = v_point - 1;
+		} else {
+			return(v_err)
+		}
+	} else {
+		v_point = v_offset - 1;
+	}
+	
+	for (var i=v_point; i>=0;){
+		for (var j=0; j<3; j++){
+			if ((numericCheck(p_string.charAt(i)) == true) || ((p_string.charAt(i) == "-") && (i == 0))){
+				v_result = p_string.charAt(i--) + v_result;
+			} else{
+				return(v_err);
+			}
+			if (i < 0){break;}
+		}
+		if ((j == 3) && (p_string.charAt(i) == jsSep)){i = i - 1;}
+	}
+
+	if( test == 1 ){ // Numeric
+   	   v_result = 0;
+    } else
+    if( test == 2 ){ // Currency
+       v_result = jsTextToCurrency(v_result, 1, what);
+    } else {         // Float
+       v_result = parseFloat(v_result);
+    }
+
+	return(v_result);
+}
+
+//-->
+</SCRIPT>
+<SCRIPT LANGUAGE=javascript TYPE="text/javascript">
+<!--
+var jsDec = ".";
+var jsSep = ",";
+
+
+function jsTextToCurrency( str, test, what ){
+  if( str == '' ) return 0;
+  if( test == 1 ){
+ var regexp = /^\d{1,}$|^\d{0,}.\d{0,2}$|^\d{1,}.\d{0,2}$/;
+ if( !regexp.test( str ) ){
+      return 'Invalid currency value ' + str + ' for ' + what;
+    } else {
+ var amount = parseFloat( str );
+      return Math.round( amount * 100 );
+    }
+  }
+}
+
+function jsCurrencyToText( number ){
+    var dollars = isNaN(parseInt( number / 100 )) ? 0 : parseInt( number / 100 ) ;
+  var cents = isNaN(parseInt( number % 100 )) ? 0 : parseInt( number % 100 );
+  if( cents < 0 ) { cents = -1 * cents; }
+  dollars = (dollars > 0 && dollars < 1) ? 0 : parseInt( String( dollars ) );
+  var sign = number < 0 && dollars == 0 ? '-':'';
+  return sign + String( dollars ) + '.' + ( cents < 10 ? '0' : '' ) + String( cents );
+}
+
+function jsComputeMileageExpense( miles, rate ){
+  return parseInt( String( ( ( miles * rate ) + 50 ) / 100 ) ) ;
+}
+//-->
+</SCRIPT>
+<SCRIPT LANGUAGE=javascript TYPE="text/javascript">
+<!--
+
+function DateCompare(date1, date2, test){
+//Called from validate()
+//Checks the integretity of the month day and year values when put together
+   if( test == 1 ){
+      var error = 0;
+      //alert(date1 + ' ' + date2);
+      var dateNum1 = parseInt(date1);
+      var dateNum2 = parseInt(date2)
+      if( dateNum2 < dateNum1 ){
+		return date_compare;
+      }else{
+		 return '';
+      }
+   }
+}
+
+function DateIn( month, day, year, test, what ){
+//Called from validate()
+//Checks the integretity of the month day and year values when put together
+   if( test == 1 ){
+      var error = 0;
+      if( month == 2 ){
+         // February
+         if( year % 4 == 0 && ( year % 100 != 0 || year % 400 == 0 ) ) {		
+         // leap year
+            if( day > 29 )
+               error = 1;
+         }
+         else if( day > 28 )
+            error = 1;
+      }
+      else if( day == 31 ){
+				if( month == 4 || month == 6 || month == 9 || month == 11 )
+					 error = 1;
+      }
+      if( error == 1 ){
+         return "Invalid date " + month + "/" + day + "/" + year + " for " + what;
+      }else{
+		 return '';
+      }
+   }
+}
+
+function displayTables(){
+   changedFlag=true;
+   if (!isNav){
+       theTable.Draw();
+   }
+   update();
+}
+
+function displayError(strErr){
+   gErrDelay=true;
+   alert(strErr);
+   var eID = setTimeout("gErrDelay=false;",1000,"javascript");
+}
+
+function delayUpdate(){
+   var uID = setTimeout("update()",200,"javascript");
+}
+
+function update(){
+	if (changedFlag){
+        updateTotals(true);
+
+		if (isNav){
+			theTable.Draw();
+		}else{
+            Load_Div('divSumm', theInfo.footer);
+		}
+        return true;
+	}
+	return false;
+}
+
+function updateTotals(bFooter){
+	var rownumber = theTable.rows.length;
+	//var total_amount = 0;
+	var cash_advance = theInfo.cashadvance;
+	var total = 0;
+	
+	//the following evaluates the script and then gets the row amount
+	//either directly for non-mileage
+	//or by calculation for mileage
+	//it keeps a running total of the amount in the total_amount variable
+	for( i = 0; i < rownumber; i++ ){
+		if (!theTable.rows[i].deletedFlag){
+			if((theTable.rows[i].milesFlag)) {
+				total += (theTable.rows[i].amount?jsComputeMileageExpense(theTable.rows[i].amount, mileage_rate):0);
+				// alert(total + ' total\r' + mileage_rate + 'mileage_rate\r'
+				//      + theTable.rows[i].amount + 'theTable.rows[' + i + '].amount\r' );
+			}else {
+				total += theTable.rows[i].amount;
+			}
+		}
+	}
+	theInfo.total = total;
+	theInfo.cashadvance = cash_advance;
+	theInfo.amountdue = total - cash_advance;
+
+    if (bFooter) {
+       theInfo.footer = LoadFooter();
+    }
+
+    return true;
+}
+
+function validate(){
+	var result;
+	var smonth = String(theInfo.startmonth);
+	smonth = (smonth.length == 1)? '0'+ smonth:smonth;
+	var sday = String(theInfo.startday);
+	sday = (sday.length == 1)? '0'+sday:sday;
+	var syear = String(theInfo.startyear);
+	var startdate = syear+smonth+sday;
+	var emonth = String(theInfo.endmonth);
+	emonth = (emonth.length == 1)? '0'+emonth:emonth;
+	var eday = String(theInfo.endday);
+	eday = (eday.length == 1)? '0'+eday:eday;
+	var eyear = String(theInfo.endyear);
+	var enddate = eyear+emonth+eday;
+	var month;
+	var day;
+	var year;
+	var type = 0;
+	var val = "";
+	var what;
+	var regexp = /\d+|\D+/;
+	var purpose = String(theInfo.purpose);
+	result = DateCompare(startdate,enddate,1)
+	if (result ==''){
+		result = DateIn( theInfo.startmonth, theInfo.startday, theInfo.startyear, 1, "'Start' date" );
+		if (result == ''){
+			//go on
+			result = DateIn( theInfo.endmonth, theInfo.endday, theInfo.endyear, 1, "'End' date" );
+			if (result == ''){
+				//Check to see if cash advance is a number~ could use regexp
+				result = AmountIn( theInfo.cashadvance, 1, amount_cashadv );
+				if (result == 0){
+					var i = 0;
+                    var rowIDX=0;
+					for( i = 0; i < theTable.rows.length; i++ ) {
+                        if (theTable.rows[i].deletedFlag){
+                           continue;
+                        }
+                        theTable.rows[i].errorFlag=false;
+                        rowIDX++;
+						month = theTable.rows[i].month;
+						smonth = String(month);
+						smonth = (smonth.length == 1)? '0'+ smonth:smonth;
+						day = theTable.rows[i].day;
+						sday = String(day);
+						sday = (sday.length == 1)? '0'+sday:sday;
+						year = theTable.rows[i].year;
+						syear = String(year);
+						amount = theTable.rows[i].amount;
+						if (theTable.rows[i].cat == 0 && !(theTable.rows[i].deletedFlag)){
+							result = 'Need to select a category before submission in item ' + rowIDX + '.';	
+                            theTable.rows[i].errorFlag=true;
+							break;
+						}
+					    result = DateIn( month, day, year, 1, date_item + rowIDX );
+					    if (result != '') {
+                            theTable.rows[i].errorFlag=true;
+							break;
+                        }
+						//alert(startdate + ' startdate\r' + syear+smonth+sday + ' syear+smonth+sday\r' + enddate + ' enddate');
+						if (parseInt(startdate) <= parseInt(syear+smonth+sday) && parseInt(syear+smonth+sday) <= parseInt(enddate)){
+							result = '';
+						}else{
+							result = 'The date in item ' + rowIDX + ' is not within the start and end dates selected.';
+                            theTable.rows[i].errorFlag=true;
+							break;
+						}
+						if (result != '')
+							break;
+					}
+				}
+			}
+		}
+	}
+return result;
+}
+
+//***************************************************************************************************************************
+//Utility functions
+//***************************************************************************************************************************
+function ButtonAction(cmdName){
+    // Disable button action if Err.
+    if (gErrDelay) {
+       return;
+    }
+	var cntr = 0;
+	if (isNav){
+		//For Netscape
+	 	var theLayer = eval('window');
+		var theDoc = theLayer.document;
+		var theForm = theDoc.frmHeader;
+	}else{
+		//For IE
+		var theForm = document.frmHeader;
+	}
+	switch (cmdName){
+        case 'AddRegular':
+            theTable.AddRow(false);
+            top.resizeFlag = false;
+            addFlag = true;
+            theTable.Draw();
+        break
+        case 'AddMileage':
+            theTable.AddRow(true);
+            top.resizeFlag = false;
+            addFlag = true;
+            theTable.Draw();
+        break
+		case 'Cancel':
+			//if page has a non-zero ID in the querystring then it is an old report
+			//Therefore the cancel button should erase any new report that is cancelled
+			//alert('Cancel the report.');
+			parent.location = list_page;
+		break
+		case 'Delete':
+			//alert('Delete the report.');
+			//theForm.action = 'ExpenseReportDelete.asp';
+			//theForm.submit();
+			parent.location = delete_page + '\?expID=' + document.frmHeader.expID.value;
+		break
+		case 'DeleteRow':
+            var args = ButtonAction.arguments;
+            var rownumber = args[1];
+            var bDeleteRow;
+            var rowDesc = theTable.rows[rownumber].desc
+            bDeleteRow = confirm(confirm_delete+theTable.rows[rownumber].rowIDX+"?\n\n");
+            if (bDeleteRow) {
+               changedFlag=true;
+               theTable.DeleteRow(rownumber);
+               update();
+            }
+		break
+		case 'SavePrint':
+			theForm.action = 'ExpenseReportSave.asp?Print=true';
+			ButtonAction('Save');
+		break
+		case 'Save':
+		//if non-zero id then an old report and use that to save
+		//if a zero id then new report and create a record
+            updateTotals(false);
+			var tab = '\t';
+			var month;
+			var day;
+			var errormsg = validate();
+			if( errormsg.length > 0 ){
+				//then there is an error
+                theTable.changedFlag = true;
+                theTable.Draw();
+				displayError(errormsg);
+				return;
+			}
+			//Loop through theTable.rows array and concat all the data;
+			//Put into SQL format for ease of use later
+			//Delimit twice once for the separate fields and then again for the separate rows
+			var rowCount = theTable.GetRowCount();
+			var lineText = '';
+			var totalText = '';
+			//Get header information
+			var i = 0;
+			for(i=0;i<rowCount;i++){
+				if (!theTable.rows[i].deletedFlag){
+					//Create the row text
+					month = String(theTable.rows[i].month);
+					month = (month.length == 1) ? '0'+ month : month;
+					day = String(theTable.rows[i].day);
+					day = (day.length == 1) ? '0'+ day : day;
+					var strAmount = String(theTable.rows[i].amount);
+					var strDesc = String(theTable.rows[i].desc);
+					strDesc = Trim(Replace(strDesc,'\'',"''"));
+					var strPayee = String(theTable.rows[i].payee);
+                    strPayee = Trim(Replace(strPayee,'\'',"''"));
+					if (isNaN(theTable.id)){
+						//new report
+						if (!theTable.rows[i].deletedFlag){
+							lineText = "'" + theTable.rows[i].year
+								     + month
+								     + day + "',"
+								     + theTable.rows[i].cat + ",'"
+								     + strPayee + "',"
+								     + (strAmount.length > 0 ? strAmount: 0) + ",'"
+                                     + strDesc + "',"
+                                     + theTable.siteid
+                                     + ")"
+									 + ((i<rowCount-1)?tab:'');
+									 ++cntr;
+						}
+					}else{
+						//existing report
+						if (!theTable.rows[i].deletedFlag){
+							lineText = "("
+							         + theTable.id + ",'"
+							         + theTable.rows[i].year
+								     + month
+								     + day + "',"
+								     + theTable.rows[i].cat + ",'"
+								     + strPayee + "',"
+								     + (strAmount.length > 0 ? strAmount: 0) + ",'"
+                                     + strDesc + "',"
+								     + theTable.siteid
+								     + ")"
+									 + ((i<rowCount-1)?tab:'');
+								     ++cntr;
+						}
+					}
+					totalText +=  lineText;
+				
+				}
+			}
+			theForm.expData.value = totalText;
+                      theForm.CashAdvance.value = theInfo.cashadvance;
+                      theForm.AmountDue.value = theInfo.amountdue;
+                      theForm.submit();
+                    //frmTest2.action="ExpenseReportSave.asp";
+                    //frmTest2.submit();
+		break
+	}
+}
+
+function AbortEntry(objEntry)
+{
+  window.focus();
+  objEntry.focus();
+  objEntry.select();
+  return false;
+}
+
+function changeAmount(objAmt,rownumber,milesFlag){
+//Called from the OnChange event of the Amount input box
+	changedFlag=true;
+    var strErr='';
+    var rowIDX = theTable.rows[rownumber].rowIDX;
+	var rowAmt = Trim(objAmt.value);
+
+	var tmpAmt = AmountIn(rowAmt,(milesFlag?3:2), amount_item + rowIDX);
+
+	if (rowAmt < 0){
+        strErr = err_amount_pos + rowIDX + '.  ' + err_item_revert;
+	}else
+	if (isNaN(tmpAmt)) {
+		strErr = tmpAmt + '.  ' + err_item_revert;
+    }
+
+    if( strErr.length > 0 ){
+       displayError(strErr);
+       tmpAmt = theTable.rows[rownumber].amount;
+       objAmt.value = (milesFlag)?jsMileageToText(tmpAmt):jsCurrencyToText(tmpAmt);
+       return AbortEntry(objAmt);
+    } else {
+       theTable.rows[rownumber].amount = tmpAmt;
+       objAmt.value = (milesFlag)?jsMileageToText(tmpAmt):jsCurrencyToText(tmpAmt);
+       theTable.changedFlag = true;
+
+       if (isNav){
+          delayUpdate();
+       } else {
+          if (milesFlag){
+             var inAmountDue = (tmpAmt?jsComputeMileageExpense(tmpAmt, mileage_rate):0);
+             Load_Div('TR'+ rownumber +'MTotal', currency_prefix + jsCurrencyToText(inAmountDue) + currency_postfix);
+          }
+          updateTotals(true);
+          Load_Div('expAmountTotal', currency_prefix + jsCurrencyToText(theInfo.total) + currency_postfix );
+          Load_Div('expAmountDue', currency_prefix + jsCurrencyToText(theInfo.amountdue) + currency_postfix );
+       }
+    }
+
+    return true;
+}
+
+function Replace(string,text,by) {
+// Replaces text with by in string
+    var strLength = string.length, txtLength = text.length;
+    if ((strLength == 0) || (txtLength == 0)) return string;
+
+    var i = string.indexOf(text);
+    if ((!i) && (text != string.substring(0,txtLength))) return string;
+    if (i == -1) return string;
+
+    var newstr = string.substring(0,i) + by;
+
+    if (i+txtLength < strLength)
+        newstr += Replace(string.substring(i+txtLength,strLength),text,by);
+
+    return newstr;
+}
+
+function Trim(inStr){
+//Called from the OnChange event of the CashAdvance input box
+	var converted = String(inStr);
+	var regexp2 = /\d+|\D+/;
+	var firstNum = converted.search(regexp2);
+	converted = converted.slice(firstNum);
+	var trimmer = converted.lastIndexOf(' ');
+	if (trimmer < (converted.length -1)){
+		return converted;
+	}else{
+		while (trimmer != -1){
+			converted = converted.slice(0,converted.length -1);
+			trimmer = converted.lastIndexOf(' ');
+			if ((converted.length -1) != trimmer){
+				break;
+			}
+		}
+	}
+	return converted;
+}
+//***************************************************************************************************************************
+//Object globals
+//***************************************************************************************************************************
+var theInfo = new Info();
+var theTable = new Table();
+theTable.name = "Expenses";
+//-->
+</SCRIPT>
+<SCRIPT LANGUAGE=javascript TYPE="text/javascript">
+
+</SCRIPT>
+</HEAD>
+<BODY class=page id="tablebody" onLoad="displayTables();">
+<FORM ID="frmHeader" NAME="frmHeader" action="ExpenseReportSave.asp"  
+onsubmit="Javascript:ButtonAction('Save'); return false;" method="post">
+  <! Application Header >
+  <TABLE  border=0 cellpadding=0 cellspacing=0 width="44%">
+    <tr> 
+      <td align=left width="731"><span  class="text_header"><b>Expense Management</b></span></td>
+      <td align=right width=9>&nbsp;</td>
+    </tr>
+    <tr> 
+      <td colspan=2> 
+        <hr size="1">      </td>
+    </tr>
+  </TABLE>
+  <br>
+  <table>
+    <tr> 
+      <td align=right class=text_normal>Purpose:</td>
+      <td>&nbsp;</td>
+      <td nowrap> 
+        <input class=textbox type=text name="Purpose" size="45" maxlength="63" value=""
+		 onChange="theInfo.purpose=Purpose.value;">
+      </td>
+    </tr>
+    <tr> 
+      <td align=right class=text_normal>Status:</td>
+      <td>&nbsp;</td>
+      <td> 
+        
+        <select id="Status" name="Status" onChange="theInfo.status=Status.selectedIndex;">
+          
+          <option value="1" >Draft</OPTION>
+          
+          <option value="2" >Summited</OPTION>
+          
+          <option value="3" >Paid</OPTION>
+          
+        </select>
+      </td>
+    </tr>
+    <tr> 
+      <td align=right class=text_normal>Expenses from:</td>
+      <td>&nbsp;</td>
+      <td> 
+        <table cellspacing=0 cellpadding=0>
+          <tr> 
+            <td> 
+              <SCRIPT LANGUAGE=javascript TYPE="text/javascript">
+<!--
+
+theInfo.startmonth = theMonth;
+
+document.write(HeaderMonthList('start',theInfo.startmonth));
+//-->
+</SCRIPT>
+            </td>
+            <td> 
+              <SCRIPT LANGUAGE=javascript TYPE="text/javascript">
+<!--
+
+theInfo.startday = theDay;
+
+document.write(HeaderDateList('start',theInfo.startday));
+//-->
+</SCRIPT>
+            </td>
+            <td> 
+              <SCRIPT LANGUAGE=javascript TYPE="text/javascript">
+<!--
+
+theInfo.startyear = theYear;
+
+document.write(HeaderYearList('start',theInfo.startyear));
+//-->
+</SCRIPT>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <tr> 
+      <td align=right class=text_normal>Expenses to:</td>
+      <td>&nbsp;</td>
+      <td> 
+        <table cellspacing=0 cellpadding=0>
+          <tr> 
+            <td> 
+              <SCRIPT LANGUAGE=javascript TYPE="text/javascript">
+<!--
+
+	theInfo.endmonth = theMonth;
+	
+document.write(HeaderMonthList('end',theInfo.endmonth));
+//-->
+</SCRIPT>
+            </td>
+            <td> 
+              <SCRIPT LANGUAGE=javascript TYPE="text/javascript">
+<!--
+
+theInfo.endday = theDay;
+
+document.write(HeaderDateList('end',theInfo.endday));
+//-->
+</SCRIPT>
+            </td>
+            <td> 
+              <SCRIPT LANGUAGE=javascript TYPE="text/javascript">
+<!--
+
+theInfo.endyear = theYear;
+
+document.write(HeaderYearList('end',theInfo.endyear));
+//-->
+</SCRIPT>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+  
+  <input type=hidden name=totalRow >
+  <INPUT type="hidden" id="expID" name="expID" value="">
+  <INPUT type="hidden" id="OID" name="OID" value="27899">
+  <INPUT type="hidden" id="expData" name="expData">
+  <INPUT type="hidden" id="currencyType" name="currencyType" value="235">
+  <INPUT type="hidden" id="mileageRate" name="mileageRate" value="0">
+  <INPUT type="hidden" id="mileageType" name="mileageType" value="1">
+  <input type="hidden" name=recordID value=>
+  <INPUT type="hidden" id="SiteID" name="SiteId" value="869">
+  <INPUT type="hidden" id="ListPage" name="ListPage" value="ExpenseReportList.asp">
+  <INPUT type="hidden" id="CashAdvance" name="CashAdvance" VALUE="0">
+  <INPUT type="hidden" id="AmountDue" name="AmountDue" value="0">
+</FORM>
+<script language=JavaScript type="text/javascript">
+<!--
+
+function goFocus() {
+document.frmHeader.Purpose.focus();
+}
+setTimeout("goFocus();",1000);
+// -->
+</script>
+<DIV id="navBody"> 
+  <!--Container for table object-->
+</DIV>
+<DIV id="divSumm"> 
+  <!--Summary table goes here-->
+</DIV>
+<SCRIPT LANGUAGE=javascript TYPE="text/javascript">
+<!--
+
+theInfo.cashadvance = 0;
+theTable.AddRow();
+theInfo.footer = LoadFooter();
+var initial_rows = 1;
+  addFlag = false;
+document.frmHeader.CashAdvance.value = jsCurrencyToText(0)
+
+-->
+</SCRIPT>
+</BODY>
+</HTML>
